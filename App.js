@@ -1,17 +1,20 @@
-import { StyleSheet } from "react-native";
-import StartGameScreen from "./screens/StartGameScreen";
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
-<<<<<<< HEAD
-  return <StartGameScreen />;
-=======
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <Text>Hello World!!!</Text>
       <StatusBar style="auto" />
     </View>
   );
->>>>>>> parent of acaf2c1 (Setting up screen components)
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
