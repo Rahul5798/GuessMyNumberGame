@@ -11,6 +11,7 @@ import Colors from "./constants/colors";
 export default function App() {
   const [userNumeber, setUserNumber] = useState();
   const [gameisOver, setGameIsOver] = useState(true);
+  const [guessRounds, setGuessRounds] = useState(0);
 
   const [isFontsLoaded] = useFonts({
     "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
@@ -27,6 +28,10 @@ export default function App() {
   function gameOverHandler() {
     setGameIsOver(true);
   }
+  function startNewGameHandler() {
+    setUserNumber(null);
+    setGuessRounds(0);
+  }
 
   let screen = <StartGameScreen onPickNumber={pickedNumberHandler} />;
   if (userNumeber) {
@@ -35,7 +40,13 @@ export default function App() {
     );
   }
   if (gameisOver && userNumeber) {
-    screen = <GameOverScreen />;
+    screen = (
+      <GameOverScreen
+        userNumber={userNumeber}
+        roundsNumber={guessRounds}
+        onStartNewGame={startNewGameHandler}
+      />
+    );
   }
   return (
     <LinearGradient
