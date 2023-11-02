@@ -1,4 +1,4 @@
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, Text, FlatList } from "react-native";
 import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -7,6 +7,7 @@ import NumberContainer from "../components/game/NumberContainer";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import Card from "../components/ui/Card";
 import InstructionText from "../components/ui/InstructionText";
+import GuessLogItem from "../components/game/GuessLogItem";
 
 function generateRandomNumberBetween(min, max, exclude) {
   const rndNum = Math.floor(Math.random() * (max - min)) + min;
@@ -24,10 +25,11 @@ let maxBoundary = 100;
 function GameScreen({ userNumber, onGameOver }) {
   const initialGuess = generateRandomNumberBetween(1, 100, userNumber);
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
+  const [guessRoundsValues, setGuessRoundsValues] = useState([initialGuess]);
 
   useEffect(() => {
     if (currentGuess === userNumber) {
-      onGameOver();
+      onGameOver(guessRoundsValues.length);
     }
   }, [currentGuess, userNumber, onGameOver]);
 
@@ -49,22 +51,21 @@ function GameScreen({ userNumber, onGameOver }) {
     }
     if (direction === "lower") {
       maxBoundary = currentGuess - 1;
-      const newRndNumber = generateRandomNumberBetween(
-        minBoundary,
-        maxBoundary,
-        currentGuess
-      );
-      setCurrentGuess(newRndNumber);
     } else {
       minBoundary = currentGuess + 1;
-      const newRndNumber = generateRandomNumberBetween(
-        minBoundary,
-        maxBoundary,
-        currentGuess
-      );
-      setCurrentGuess(newRndNumber);
     }
+    const newRndNumber = generateRandomNumberBetween(
+      minBoundary,
+      maxBoundary,
+      currentGuess
+    );
+    setCurrentGuess(newRndNumber);
+    setGuessRoundsValues((prevGuessRoundsValues) => [
+      newRndNumber,
+      ...prevGuessRoundsValues,
+    ]);
   }
+  const guessRoundsValuesListLength = guessRoundsValues.length;
   return (
     <View style={styles.screen}>
       <Title>Opponent's Guess</Title>
@@ -88,7 +89,21 @@ function GameScreen({ userNumber, onGameOver }) {
           </View>
         </Card>
       </View>
-      <View>{/*Log rounds*/}</View>
+      <View style={styles.listContainer}>
+        {/*guessRoundsValues.map((guessRoundsValues) => (
+          <Text key={guessRoundsValues}>{guessRoundsValues}</Text>
+        ))*/}
+        <FlatList
+          data={guessRoundsValues}
+          renderItem={(itemData) => (
+            <GuessLogItem
+              roundNumber={guessRoundsValuesListLength - itemData.index}
+              guess={itemData.item}
+            />
+          )}
+          keyExtractor={(item) => item}
+        />
+      </View>
     </View>
   );
 }
@@ -98,6 +113,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     padding: 24,
+    marginTop: 12,
   },
   buttonsContainer: {
     flexDirection: "row",
@@ -107,5 +123,9 @@ const styles = StyleSheet.create({
   },
   instructionText: {
     marginBottom: 12,
+  },
+  listContainer: {
+    flex: 1,
+    padding: 16,
   },
 });
